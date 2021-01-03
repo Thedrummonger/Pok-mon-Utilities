@@ -85,6 +85,7 @@ namespace Pokemon_Utils
 
         private void ResultsListBox_DoubleClick(object sender, EventArgs e)
         {
+            if (LBResults.SelectedIndex == -1) { return; }
             var pokemon = LBResults.SelectedItem.ToString();
             System.Diagnostics.Process.Start("https://bulbapedia.bulbagarden.net/wiki/" + pokemon + "#Type_effectiveness");
         }
