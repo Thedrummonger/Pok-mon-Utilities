@@ -24,6 +24,7 @@ namespace Pokemon_Utils
         public MainForm CurrentForm;
         public bool ScanningScreen = false;
         public Regex trimmer = new Regex(@"\s\s+");
+        public decimal Tolerance = 0.8M;
 
         #region FormControls
         private void Form1_Load(object sender, EventArgs e)
@@ -68,6 +69,8 @@ namespace Pokemon_Utils
                 Console.WriteLine("Scan already in process");
                 return;
             }
+            Tolerance = Tolerance = (decimal)NUDTolerance.Value;
+            Console.WriteLine(Tolerance);
             ScanningScreen = true;
             BTNScan.Text = "Scanning...";
             Font defaultFont = BTNScan.Font;
@@ -92,7 +95,7 @@ namespace Pokemon_Utils
                 foreach (var PokemonName in PKMN.Names)
                 {
                     double Simularity = CalculateSimilarity(WordFromScreen, PokemonName);
-                    if (Simularity >= (double)NUDTolerance.Value && !FoundPKMN.Contains(PokemonName)) { FoundPKMN.Add(PokemonName); }
+                    if (Simularity >= (double)Tolerance && !FoundPKMN.Contains(PokemonName)) { FoundPKMN.Add(PokemonName); }
                 }
             }
             FoundPKMN.Sort();
@@ -120,6 +123,16 @@ namespace Pokemon_Utils
             if (LBResults.SelectedIndex == -1) { return; }
             var pokemon = LBResults.SelectedItem.ToString();
             System.Diagnostics.Process.Start("https://bulbapedia.bulbagarden.net/wiki/" + pokemon + "#Type_effectiveness");
+        }
+
+        private void button1_Click(object sender, EventArgs e)
+        {
+            LBResults.Items.Clear();
+        }
+
+        private void NUDTolerance_ValueChanged(object sender, EventArgs e)
+        {
+            Tolerance = (decimal)NUDTolerance.Value;
         }
 
         #endregion FormControls

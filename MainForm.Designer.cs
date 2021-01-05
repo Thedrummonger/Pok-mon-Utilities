@@ -36,6 +36,7 @@
             this.LBResults = new System.Windows.Forms.ListBox();
             this.NUDTolerance = new System.Windows.Forms.NumericUpDown();
             this.label3 = new System.Windows.Forms.Label();
+            this.button1 = new System.Windows.Forms.Button();
             ((System.ComponentModel.ISupportInitialize)(this.NUDDisplay)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.NUDTolerance)).BeginInit();
             this.SuspendLayout();
@@ -98,10 +99,11 @@
             // NUDTolerance
             // 
             this.NUDTolerance.DecimalPlaces = 1;
-            this.NUDTolerance.Location = new System.Drawing.Point(122, 106);
+            this.NUDTolerance.Location = new System.Drawing.Point(117, 106);
             this.NUDTolerance.Name = "NUDTolerance";
-            this.NUDTolerance.Size = new System.Drawing.Size(58, 20);
+            this.NUDTolerance.Size = new System.Drawing.Size(36, 20);
             this.NUDTolerance.TabIndex = 6;
+            this.NUDTolerance.ValueChanged += new System.EventHandler(this.NUDTolerance_ValueChanged);
             // 
             // label3
             // 
@@ -112,11 +114,23 @@
             this.label3.TabIndex = 7;
             this.label3.Text = "Similarity Tolerance";
             // 
+            // button1
+            // 
+            this.button1.Location = new System.Drawing.Point(159, 106);
+            this.button1.Name = "button1";
+            this.button1.Size = new System.Drawing.Size(21, 20);
+            this.button1.TabIndex = 8;
+            this.button1.Text = "x";
+            this.button1.TextAlign = System.Drawing.ContentAlignment.TopRight;
+            this.button1.UseVisualStyleBackColor = true;
+            this.button1.Click += new System.EventHandler(this.button1_Click);
+            // 
             // MainForm
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(193, 288);
+            this.Controls.Add(this.button1);
             this.Controls.Add(this.label3);
             this.Controls.Add(this.NUDTolerance);
             this.Controls.Add(this.LBResults);
@@ -145,6 +159,7 @@
         private System.Windows.Forms.ListBox LBResults;
         private System.Windows.Forms.NumericUpDown NUDTolerance;
         private System.Windows.Forms.Label label3;
+        private System.Windows.Forms.Button button1;
     }
 }
 
