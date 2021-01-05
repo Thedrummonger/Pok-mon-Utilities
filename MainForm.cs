@@ -8,6 +8,7 @@ using System.Windows.Forms;
 using System.Runtime.InteropServices;
 using IronOcr;
 using System.Text.RegularExpressions;
+using System.Threading.Tasks;
 
 namespace Pokemon_Utils
 {
@@ -20,10 +21,14 @@ namespace Pokemon_Utils
 
         public static Screen CaptureDisplay;
         const int ENUM_CURRENT_SETTINGS = -1;
+        public MainForm CurrentForm;
+        public bool ScanningScreen = false;
+        public Regex trimmer = new Regex(@"\s\s+");
 
         #region FormControls
         private void Form1_Load(object sender, EventArgs e)
         {
+            CurrentForm = this;
             int Screencount = Screen.AllScreens.Count();
             NUDDisplay.Value = 1;
             NUDDisplay.Minimum = 1;
@@ -58,30 +63,57 @@ namespace Pokemon_Utils
 
         private void ScanButtonClick(object sender, EventArgs e)
         {
-            LBResults.Items.Clear();
-            Regex trimmer = new Regex(@"\s\s+");
-
+            if (ScanningScreen)
+            {
+                Console.WriteLine("Scan already in process");
+                return;
+            }
+            ScanningScreen = true;
+            BTNScan.Text = "Scanning...";
+            Font defaultFont = BTNScan.Font;
+            BTNScan.Font = new Font(defaultFont.FontFamily, DefaultFont.Size, FontStyle.Bold);
+            BTNScan.Enabled = false;
+            Console.WriteLine("Scan Start");
+            DoAsyncOCR();
+        }
+        public async void DoAsyncOCR()
+        {
             var image = Screenshot(Screen.AllScreens[(int)NUDDisplay.Value - 1]);
-            var Result = new IronTesseract().Read(image);
+            OcrResult Result = await Task.Run(() => new IronTesseract().Read(image));
 
             var s = trimmer.Replace(Result.Text, " ");
             s = s.Replace(".", "");
-
             string[] words = s.Split(' ');
 
+            Console.WriteLine("Comparing Pokemon");
+            List<string> FoundPKMN = new List<string>();
             foreach (var WordFromScreen in words.Where(x => !string.IsNullOrWhiteSpace(x)))
             {
-                foreach(var PokemonName in PKMN.Names)
+                foreach (var PokemonName in PKMN.Names)
                 {
                     double Simularity = CalculateSimilarity(WordFromScreen, PokemonName);
-                    if (Simularity >= (double)NUDTolerance.Value && !LBResults.Items.Contains(PokemonName))
-                    {
-                        LBResults.Items.Add(PokemonName);
-                    }
+                    if (Simularity >= (double)NUDTolerance.Value && !FoundPKMN.Contains(PokemonName)) { FoundPKMN.Add(PokemonName); }
                 }
             }
-
+            FoundPKMN.Sort();
+            FoundPKMN.Reverse();
+            PrintResults(FoundPKMN);
         }
+
+        public void PrintResults(List<string> FoundPKMN)
+        {
+            Console.WriteLine("Done");
+            foreach (var i in FoundPKMN)
+            {
+                LBResults.Items.Insert(0, i);
+            }
+            BTNScan.Text = "Scan For Pokemon Data";
+            Font defaultFont = BTNScan.Font;
+            BTNScan.Font = new Font(defaultFont.FontFamily, DefaultFont.Size, FontStyle.Regular);
+            BTNScan.Enabled = true;
+            ScanningScreen = false;
+
+        } 
 
         private void ResultsListBox_DoubleClick(object sender, EventArgs e)
         {

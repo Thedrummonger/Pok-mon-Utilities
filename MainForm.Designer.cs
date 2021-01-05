@@ -92,7 +92,6 @@
             this.LBResults.Location = new System.Drawing.Point(16, 132);
             this.LBResults.Name = "LBResults";
             this.LBResults.Size = new System.Drawing.Size(164, 147);
-            this.LBResults.Sorted = true;
             this.LBResults.TabIndex = 5;
             this.LBResults.DoubleClick += new System.EventHandler(this.ResultsListBox_DoubleClick);
             // 
