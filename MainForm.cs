@@ -9,6 +9,7 @@ using System.Runtime.InteropServices;
 using IronOcr;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
+using System.IO;
 
 namespace Pokemon_Utils
 {
@@ -25,6 +26,7 @@ namespace Pokemon_Utils
         public bool ScanningScreen = false;
         public Regex trimmer = new Regex(@"\s\s+");
         public decimal Tolerance = 0.8M;
+        public PKMN PokemonData = new PKMN();
 
         #region FormControls
         private void Form1_Load(object sender, EventArgs e)
@@ -69,7 +71,7 @@ namespace Pokemon_Utils
                 Console.WriteLine("Scan already in process");
                 return;
             }
-            Tolerance = Tolerance = (decimal)NUDTolerance.Value;
+            Tolerance = (decimal)NUDTolerance.Value;
             Console.WriteLine(Tolerance);
             ScanningScreen = true;
             BTNScan.Text = "Scanning...";
@@ -79,10 +81,13 @@ namespace Pokemon_Utils
             Console.WriteLine("Scan Start");
             DoAsyncOCR();
         }
+
         public async void DoAsyncOCR()
         {
             var image = Screenshot(Screen.AllScreens[(int)NUDDisplay.Value - 1]);
-            OcrResult Result = await Task.Run(() => new IronTesseract().Read(image));
+
+            IronTesseract IronOCR = new IronTesseract();
+            OcrResult Result = await Task.Run(() => IronOCR.Read(image));
 
             var s = trimmer.Replace(Result.Text, " ");
             s = s.Replace(".", "");
@@ -92,7 +97,7 @@ namespace Pokemon_Utils
             List<string> FoundPKMN = new List<string>();
             foreach (var WordFromScreen in words.Where(x => !string.IsNullOrWhiteSpace(x)))
             {
-                foreach (var PokemonName in PKMN.Names)
+                foreach (var PokemonName in PokemonData.getPokemonNames())
                 {
                     double Simularity = CalculateSimilarity(WordFromScreen, PokemonName);
                     if (Simularity >= (double)Tolerance && !FoundPKMN.Contains(PokemonName)) { FoundPKMN.Add(PokemonName); }
